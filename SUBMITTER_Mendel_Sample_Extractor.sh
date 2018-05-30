@@ -17,7 +17,8 @@ BARCODE_2D=${SM_TAG#*@}
 mkdir -p $CORE_PATH/M_Valle_MD_SeqWholeExome_120417_1_PLAYGROUND/$FAMILY"_ANNOVAR"
 mkdir -p $CORE_PATH/M_Valle_MD_SeqWholeExome_120417_1_PLAYGROUND/{LOGS,TEMP}
 
-SCRIPT_DIR="/mnt/research/tools/LINUX/00_GIT_REPO_KURT/scripts"
+SCRIPT_DIR="/mnt/research/tools/LINUX/00_GIT_REPO_KURT/CIDR_CMG_SAMPLE_EXTRACTOR/scripts"
+PRIORITY="-11"
 
 QUEUE_LIST=`qstat -f -s r \
 | egrep -v "^[0-9]|^-|^queue" \
@@ -31,6 +32,7 @@ QUEUE_LIST=`qstat -f -s r \
 echo \
  qsub \
  -q $QUEUE_LIST \
+ -p $PRIORITY \
  -N 'A01_EXTRACT_MENDEL_SAMPLE_'$RIS_ID'_'$BARCODE_2D \
  -o $CORE_PATH/M_Valle_MendelianDisorders_SeqWholeExome_120511_PLAYGROUND/LOGS/$SM_TAG'_A01_EXTRACT_MENDEL_SAMPLE.log' \
  $SCRIPT_DIR/A.01_EXTRACT_MENDEL_SAMPLE.sh \
@@ -41,6 +43,7 @@ echo \
 echo \
  qsub \
  -q $QUEUE_LIST \
+ -p $PRIORITY \
  -N 'B01_COPY_MENDEL_SAMPLE_TO_TEMP_'$RIS_ID'_'$BARCODE_2D \
  -hold_jid 'A01_EXTRACT_MENDEL_SAMPLE_'$RIS_ID'_'$BARCODE_2D \
  -o $CORE_PATH/M_Valle_MendelianDisorders_SeqWholeExome_120511_PLAYGROUND/LOGS/$SM_TAG'_B01_COPY_MENDEL_SAMPLE_TO_TEMP.log' \
@@ -53,6 +56,7 @@ echo \
 echo \
  qsub \
  -q $QUEUE_LIST",bigmem.q" \
+ -p $PRIORITY \
  -N 'C01_RUN_ANNOVAR_'$RIS_ID'_'$BARCODE_2D \
  -hold_jid 'B01_COPY_MENDEL_SAMPLE_TO_TEMP_'$RIS_ID'_'$BARCODE_2D \
  -o $CORE_PATH/M_Valle_MendelianDisorders_SeqWholeExome_120511_PLAYGROUND/LOGS/$SM_TAG'_C01_RUN_ANNOVAR.log' \
@@ -66,6 +70,7 @@ echo sleep 1s
 echo \
  qsub \
  -q $QUEUE_LIST \
+ -p $PRIORITY \
  -N 'D01_MOVE_ANNOVAR_'$RIS_ID'_'$BARCODE_2D \
  -hold_jid 'C01_RUN_ANNOVAR_'$RIS_ID'_'$BARCODE_2D \
  -o $CORE_PATH/M_Valle_MendelianDisorders_SeqWholeExome_120511_PLAYGROUND/LOGS/$SM_TAG'_D01_MOVE_ANNOVAR.log' \
