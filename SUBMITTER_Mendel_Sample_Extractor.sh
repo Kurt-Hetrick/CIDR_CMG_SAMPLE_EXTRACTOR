@@ -14,7 +14,8 @@ IN_VCF=$3 # full path to the joint called vcf file
 RIS_ID=${SM_TAG%@*}
 BARCODE_2D=${SM_TAG#*@}
 
-mkdir -p $CORE_PATH/M_Valle_MendelianDisorders_SeqWholeExome_120511_PLAYGROUND/$FAMILY"_ANNOVAR"
+mkdir -p $CORE_PATH/M_Valle_MD_SeqWholeExome_120417_1_PLAYGROUND/$FAMILY"_ANNOVAR"
+mkdir -p $CORE_PATH/M_Valle_MD_SeqWholeExome_120417_1_PLAYGROUND/{LOGS,TEMP}
 
 SCRIPT_DIR="/mnt/research/tools/LINUX/00_GIT_REPO_KURT/scripts"
 
