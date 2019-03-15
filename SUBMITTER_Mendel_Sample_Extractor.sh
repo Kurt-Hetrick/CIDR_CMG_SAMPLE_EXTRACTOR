@@ -25,7 +25,7 @@ QUEUE_LIST=`qstat -f -s r \
 | cut -d @ -f 1 \
 | sort \
 | uniq \
-| egrep -v "bigmem.q|all.q|cgc.q|programmers.q|rhel7.q|c6420.q" \
+| egrep -v "bigmem.q|all.q|cgc.q|programmers.q|rhel7.q|c6420.q|qtest.q" \
 | datamash collapse 1 \
 | awk '{print $1}'`
 
@@ -38,51 +38,67 @@ module load gcc/7.2.0
 umask 0007
 
 echo \
- qsub \
- -q $QUEUE_LIST \
- -p $PRIORITY \
- -N 'A01_EXTRACT_MENDEL_SAMPLE_'$RIS_ID'_'$BARCODE_2D \
- -o $CORE_PATH/M_Valle_MD_SeqWholeExome_120417_1_PLAYGROUND/LOGS/$SM_TAG'_A01_EXTRACT_MENDEL_SAMPLE.log' \
- $SCRIPT_DIR/A.01_EXTRACT_MENDEL_SAMPLE.sh \
- $SM_TAG $FAMILY $IN_VCF
+qsub \
+-q $QUEUE_LIST \
+-p $PRIORITY \
+-V \
+-cwd \
+-S /bin/bash \
+-j y \
+-N 'A01_EXTRACT_MENDEL_SAMPLE_'$RIS_ID'_'$BARCODE_2D \
+-o $CORE_PATH/M_Valle_MD_SeqWholeExome_120417_1_PLAYGROUND/LOGS/$SM_TAG'_A01_EXTRACT_MENDEL_SAMPLE.log' \
+/mnt/research/tools/LINUX/00_GIT_REPO_KURT/CIDR_CMG_SAMPLE_EXTRACTOR/scripts/A.01_EXTRACT_MENDEL_SAMPLE.sh \
+$SM_TAG $FAMILY $IN_VCF
  
  echo sleep 1s
  
 echo \
- qsub \
- -q $QUEUE_LIST \
- -p $PRIORITY \
- -N 'B01_COPY_MENDEL_SAMPLE_TO_TEMP_'$RIS_ID'_'$BARCODE_2D \
- -hold_jid 'A01_EXTRACT_MENDEL_SAMPLE_'$RIS_ID'_'$BARCODE_2D \
- -o $CORE_PATH/M_Valle_MD_SeqWholeExome_120417_1_PLAYGROUND/LOGS/$SM_TAG'_B01_COPY_MENDEL_SAMPLE_TO_TEMP.log' \
- $SCRIPT_DIR/B.01_COPY_MENDEL_SAMPLE_TO_TEMP.sh \
- $SM_TAG $FAMILY
+qsub \
+-q $QUEUE_LIST \
+-p $PRIORITY \
+-V \
+-cwd \
+-S /bin/bash \
+-j y \
+-N 'B01_COPY_MENDEL_SAMPLE_TO_TEMP_'$RIS_ID'_'$BARCODE_2D \
+-hold_jid 'A01_EXTRACT_MENDEL_SAMPLE_'$RIS_ID'_'$BARCODE_2D \
+-o $CORE_PATH/M_Valle_MD_SeqWholeExome_120417_1_PLAYGROUND/LOGS/$SM_TAG'_B01_COPY_MENDEL_SAMPLE_TO_TEMP.log' \
+/mnt/research/tools/LINUX/00_GIT_REPO_KURT/CIDR_CMG_SAMPLE_EXTRACTOR/scripts/B.01_COPY_MENDEL_SAMPLE_TO_TEMP.sh \
+$SM_TAG $FAMILY
  
  echo sleep 1s
  
  
 echo \
- qsub \
- -q $QUEUE_LIST",bigmem.q" \
- -p $PRIORITY \
- -N 'C01_RUN_ANNOVAR_'$RIS_ID'_'$BARCODE_2D \
- -hold_jid 'B01_COPY_MENDEL_SAMPLE_TO_TEMP_'$RIS_ID'_'$BARCODE_2D \
- -o $CORE_PATH/M_Valle_MD_SeqWholeExome_120417_1_PLAYGROUND/LOGS/$SM_TAG'_C01_RUN_ANNOVAR.log' \
- -pe slots 5 \
- -R y \
- $SCRIPT_DIR/C.01_RUN_ANNOVAR.sh \
- $SM_TAG
+qsub \
+-q $QUEUE_LIST",bigmem.q" \
+-p $PRIORITY \
+-V \
+-cwd \
+-S /bin/bash \
+-j y \
+-N 'C01_RUN_ANNOVAR_'$RIS_ID'_'$BARCODE_2D \
+-hold_jid 'B01_COPY_MENDEL_SAMPLE_TO_TEMP_'$RIS_ID'_'$BARCODE_2D \
+-o $CORE_PATH/M_Valle_MD_SeqWholeExome_120417_1_PLAYGROUND/LOGS/$SM_TAG'_C01_RUN_ANNOVAR.log' \
+-pe slots 5 \
+-R y \
+/mnt/research/tools/LINUX/00_GIT_REPO_KURT/CIDR_CMG_SAMPLE_EXTRACTOR/scripts/C.01_RUN_ANNOVAR.sh \
+$SM_TAG
 
 echo sleep 1s
 
 echo \
- qsub \
- -q $QUEUE_LIST \
- -p $PRIORITY \
- -N 'D01_MOVE_ANNOVAR_'$RIS_ID'_'$BARCODE_2D \
- -hold_jid 'C01_RUN_ANNOVAR_'$RIS_ID'_'$BARCODE_2D \
- -o $CORE_PATH/M_Valle_MD_SeqWholeExome_120417_1_PLAYGROUND/LOGS/$SM_TAG'_D01_MOVE_ANNOVAR.log' \
- $SCRIPT_DIR/D.01_MOVE_ANNOVAR.sh \
- $SM_TAG $FAMILY
+qsub \
+-q $QUEUE_LIST \
+-p $PRIORITY \
+-V \
+-cwd \
+-S /bin/bash \
+-j y \
+-N 'D01_MOVE_ANNOVAR_'$RIS_ID'_'$BARCODE_2D \
+-hold_jid 'C01_RUN_ANNOVAR_'$RIS_ID'_'$BARCODE_2D \
+-o $CORE_PATH/M_Valle_MD_SeqWholeExome_120417_1_PLAYGROUND/LOGS/$SM_TAG'_D01_MOVE_ANNOVAR.log' \
+/mnt/research/tools/LINUX/00_GIT_REPO_KURT/CIDR_CMG_SAMPLE_EXTRACTOR/scripts/D.01_MOVE_ANNOVAR.sh \
+$SM_TAG $FAMILY
 
 echo sleep 1s
