@@ -11,6 +11,7 @@ CORE_PATH="/mnt/research/active"
 GATK_DIR="/mnt/linuxtools/GATK/GenomeAnalysisTK-3.7"
 REF_GENOME="/mnt/research/tools/PIPELINE_FILES/bwa_mem_0.7.5a_ref/human_g1k_v37_decoy.fasta"
 JAVA_1_8="/mnt/linuxtools/JAVA/jdk1.8.0_73/bin"
+TABIX_DIR="/mnt/research/tools/LINUX/TABIX/tabix-0.2.6"
 
 SM_TAG=$1
 FAMILY=$2
@@ -35,8 +36,8 @@ $JAVA_1_8/java -jar $GATK_DIR/GenomeAnalysisTK.jar \
 
 # Now remove the records where the alternate allele is just a *
 
-	( zgrep "^#" $CORE_PATH/$PROJECT_SAMPLE/TEMP/$SM_TAG"_MS_OnBait.TEMP.vcf.gz" ; \
-		zgrep -v "^#" $CORE_PATH/$PROJECT_SAMPLE/TEMP/$SM_TAG"_MS_OnBait.TEMP.vcf.gz" | awk '$5!="*"' ) \
+	( zgrep "^#" $CORE_PATH/M_Valle_MD_SeqWholeExome_120417_1_PLAYGROUND/TEMP/$SM_TAG"_MS_OnBait.vcf.gz" ; \
+		zgrep -v "^#" $CORE_PATH/M_Valle_MD_SeqWholeExome_120417_1_PLAYGROUND/TEMP/$SM_TAG"_MS_OnBait.vcf.gz" | awk '$5!="*"' ) \
 	| $TABIX_DIR/bgzip -c /dev/stdin \
 	>| $CORE_PATH/M_Valle_MD_SeqWholeExome_120417_1_PLAYGROUND/$FAMILY"_ANNOVAR"/$SM_TAG"_MS_OnBait.vcf.gz"
 
